@@ -1,6 +1,10 @@
 name: Node.js CI
 on:
+  # working on push and pull
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -25,6 +29,7 @@ jobs:
 
   build:
      needs: test # test first before building
+                 # if the test job fails, the build job will not run
      runs-on: ubuntu-latest
 
      steps:
