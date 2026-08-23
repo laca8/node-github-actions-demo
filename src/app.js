@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
     res.json({
         status: "ok",
+        message: "Server is healthy",
     });
 });
 
