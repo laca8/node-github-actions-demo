@@ -1,12 +1,36 @@
 name: Node.js CI
+# working on push and pull and pull_request
 on:
-  # working on push and pull
   push:
+  # branch filter
     branches:
       - main
+    # files that trigger the workflow when changed
+          # ex)
+            # src/app.js          → Workflow ✅
+            # test/app.test.js    → Workflow ✅
+            # package.json        → Workflow ✅
+            # README.md           → Workflow ❌
+            # docs/file.md        → Workflow ❌
+    # path filter
+    paths:
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      #اسمح لي أشغّل الـ Workflow يدويًا من GitHub.
+      
+  workflow_dispatch:
+    branches: # allows you to manually trigger the workflow from the Actions tab in GitHub
+      - main
+      - dev  # workflow can be triggered manually from the dev branch
 
 jobs:
   test:
@@ -69,3 +93,24 @@ jobs:
 
       - name: Build
         run: npm run build
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-build
+          path: dist/
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: node-build
+          path: dist
+
+      - name: Show downloaded files
+        run: ls -R dist  
